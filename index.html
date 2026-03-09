@@ -362,6 +362,23 @@ body.ready .splash {
     display: block;
 }
 
+.resume-pages {
+    width: 100%;
+    min-height: 100%;
+    padding: 10px;
+    display: grid;
+    gap: 10px;
+    align-content: start;
+}
+
+.resume-page {
+    width: 100%;
+    height: auto;
+    display: block;
+    background: #fff;
+    border-radius: 4px;
+}
+
 body.resume-open {
     overflow: hidden;
 }
@@ -406,6 +423,11 @@ body.resume-open {
     .resume-close {
         width: 42px;
         height: 42px;
+    }
+
+    .resume-pages {
+        padding: 8px;
+        gap: 8px;
     }
 }
 
@@ -654,8 +676,9 @@ body.resume-open {
     <aside class="resume-overlay" id="resumeOverlay" aria-hidden="true">
         <div class="resume-panel" role="dialog" aria-modal="true" aria-label="Arsh Hashmi Resume">
             <button class="resume-close" id="closeResumeBtn" type="button" aria-label="Close resume">x</button>
-            <div class="resume-frame-wrap">
+            <div class="resume-frame-wrap" id="resumeFrameWrap">
                 <iframe class="resume-frame" id="resumeFrame" src="resume.pdf#toolbar=0&navpanes=0&view=FitH" title="Arsh Hashmi Resume PDF" loading="lazy"></iframe>
+                <div class="resume-pages" id="resumePages" hidden></div>
             </div>
         </div>
     </aside>
@@ -669,11 +692,112 @@ body.resume-open {
             const resumeLink = document.getElementById("resumeLink");
             const resumeOverlay = document.getElementById("resumeOverlay");
             const closeResumeBtn = document.getElementById("closeResumeBtn");
+            const resumeFrameWrap = document.getElementById("resumeFrameWrap");
             const resumeFrame = document.getElementById("resumeFrame");
+            const resumePages = document.getElementById("resumePages");
             const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-            const isMobileView = window.matchMedia("(max-width: 768px)").matches;
+            const mobileQuery = window.matchMedia("(max-width: 768px)");
             const desktopResumeSrc = "resume.pdf#toolbar=0&navpanes=0&view=FitH";
             const mobileResumeSrc = "resume.pdf#toolbar=0&navpanes=0&zoom=page-width&view=FitH";
+            let mobileResumeRendered = false;
+            let mobileRenderInFlight = null;
+
+            const ensurePdfJs = function () {
+                if (window.pdfjsLib) {
+                    return Promise.resolve(window.pdfjsLib);
+                }
+
+                return new Promise(function (resolve, reject) {
+                    const existing = document.querySelector("script[data-pdfjs='true']");
+                    if (existing) {
+                        existing.addEventListener("load", function () {
+                            resolve(window.pdfjsLib);
+                        }, { once: true });
+                        existing.addEventListener("error", reject, { once: true });
+                        return;
+                    }
+
+                    const script = document.createElement("script");
+                    script.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+                    script.async = true;
+                    script.dataset.pdfjs = "true";
+                    script.addEventListener("load", function () {
+                        resolve(window.pdfjsLib);
+                    }, { once: true });
+                    script.addEventListener("error", reject, { once: true });
+                    document.head.appendChild(script);
+                });
+            };
+
+            const renderMobileResume = function () {
+                if (mobileResumeRendered) {
+                    return Promise.resolve();
+                }
+
+                if (mobileRenderInFlight) {
+                    return mobileRenderInFlight;
+                }
+
+                mobileRenderInFlight = ensurePdfJs()
+                    .then(function (pdfjsLib) {
+                        pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+                        return pdfjsLib.getDocument("resume.pdf").promise;
+                    })
+                    .then(function (pdfDoc) {
+                        const targetWidth = Math.max(320, resumeFrameWrap.clientWidth - 20);
+                        resumePages.innerHTML = "";
+
+                        const renderChain = [];
+                        for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum += 1) {
+                            renderChain.push(
+                                pdfDoc.getPage(pageNum).then(function (page) {
+                                    const baseViewport = page.getViewport({ scale: 1 });
+                                    const scale = targetWidth / baseViewport.width;
+                                    const viewport = page.getViewport({ scale: scale });
+                                    const canvas = document.createElement("canvas");
+                                    const context = canvas.getContext("2d", { alpha: false });
+                                    canvas.className = "resume-page";
+                                    canvas.width = Math.floor(viewport.width);
+                                    canvas.height = Math.floor(viewport.height);
+
+                                    return page.render({
+                                        canvasContext: context,
+                                        viewport: viewport
+                                    }).promise.then(function () {
+                                        resumePages.appendChild(canvas);
+                                    });
+                                })
+                            );
+                        }
+
+                        return Promise.all(renderChain).then(function () {
+                            mobileResumeRendered = true;
+                        });
+                    })
+                    .catch(function () {
+                        resumePages.hidden = true;
+                        resumeFrame.style.display = "block";
+                        resumeFrame.src = mobileResumeSrc;
+                    })
+                    .finally(function () {
+                        mobileRenderInFlight = null;
+                    });
+
+                return mobileRenderInFlight;
+            };
+
+            const applyResumeMode = function () {
+                if (mobileQuery.matches) {
+                    resumeFrame.style.display = "none";
+                    resumePages.hidden = false;
+                    renderMobileResume();
+                    return;
+                }
+
+                resumePages.hidden = true;
+                resumeFrame.style.display = "block";
+                resumeFrame.src = desktopResumeSrc;
+            };
 
             const revealPage = function () {
                 body.classList.add("ready");
@@ -710,11 +834,7 @@ body.resume-open {
             avatarImage.addEventListener("error", showFallback);
 
             const openResume = function () {
-                if (isMobileView) {
-                    resumeFrame.src = mobileResumeSrc;
-                } else {
-                    resumeFrame.src = desktopResumeSrc;
-                }
+                applyResumeMode();
                 resumeOverlay.classList.add("open");
                 resumeOverlay.setAttribute("aria-hidden", "false");
                 body.classList.add("resume-open");
@@ -742,6 +862,12 @@ body.resume-open {
             window.addEventListener("keydown", function (event) {
                 if (event.key === "Escape" && resumeOverlay.classList.contains("open")) {
                     closeResume();
+                }
+            });
+
+            window.addEventListener("resize", function () {
+                if (resumeOverlay.classList.contains("open")) {
+                    applyResumeMode();
                 }
             });
         }());
