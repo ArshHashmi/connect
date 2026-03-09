@@ -5,7 +5,412 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#090d14">
     <title>Arsh Hashmi | Links</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700&family=Sora:wght@300;400;600&display=swap");
+
+:root {
+    --bg-base: #070707;
+    --bg-panel: rgba(16, 16, 16, 0.9);
+    --bg-chip: rgba(255, 255, 255, 0.04);
+    --line-soft: rgba(255, 255, 255, 0.2);
+    --line-strong: rgba(255, 255, 255, 0.42);
+    --text-main: #f4f4f4;
+    --text-muted: #a8a8a8;
+    --accent: #f2f2f2;
+    --accent-soft: rgba(255, 255, 255, 0.16);
+    --radius-xl: 26px;
+    --radius-lg: 18px;
+    --radius-sm: 12px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    min-height: 100%;
+}
+
+body {
+    font-family: "Sora", "Segoe UI", sans-serif;
+    color: var(--text-main);
+    background:
+        radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.1), transparent 33%),
+        radial-gradient(circle at 84% 100%, rgba(255, 255, 255, 0.08), transparent 42%),
+        linear-gradient(140deg, #000000, #0a0a0a 55%, #050505);
+    display: flex;
+    justify-content: center;
+    padding: 20px 14px 30px;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 46px 46px;
+    mask-image: radial-gradient(circle at center, black 55%, transparent 100%);
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.splash {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 14px;
+    background:
+        radial-gradient(circle at 50% 35%, rgba(255, 255, 255, 0.1), transparent 40%),
+        #030303;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+.splash-label {
+    font-family: "Manrope", "Sora", sans-serif;
+    font-size: clamp(1.55rem, 7vw, 2.35rem);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    opacity: 0;
+    transform: translateY(18px) scale(0.96);
+    animation: nameIntro 0.95s cubic-bezier(0.2, 0.7, 0.2, 1) 0.12s forwards;
+}
+
+.splash-line {
+    width: 130px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0;
+    transform: scaleX(0.2);
+    animation: lineIntro 0.75s ease 0.52s forwards;
+}
+
+.splash-sub {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.24em;
+    opacity: 0;
+    transform: translateY(8px);
+    animation: subIntro 0.65s ease 0.7s forwards;
+}
+
+.page {
+    width: min(100%, 420px);
+    display: grid;
+    gap: 16px;
+    opacity: 0;
+    transform: translateY(12px) scale(0.985);
+    filter: blur(8px);
+    transition: opacity 0.65s ease 0.2s, transform 0.65s ease 0.2s, filter 0.65s ease 0.2s;
+}
+
+body.ready .page {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+}
+
+body.ready .splash {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.profile-card {
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--line-soft);
+    background: linear-gradient(162deg, rgba(18, 18, 18, 0.9), rgba(10, 10, 10, 0.92));
+    backdrop-filter: blur(10px);
+    padding: 22px 18px 16px;
+    text-align: center;
+    box-shadow: 0 20px 38px rgba(0, 0, 0, 0.35);
+}
+
+.avatar-slot {
+    width: 108px;
+    height: 108px;
+    margin: 0 auto 14px;
+    border-radius: 20px;
+    display: grid;
+    place-content: center;
+    position: relative;
+    border: 1px solid var(--line-strong);
+    background: radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.2), rgba(18, 18, 18, 0.7));
+    overflow: hidden;
+}
+
+.avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 35%;
+    display: block;
+}
+
+.avatar-fallback {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    font-size: 0.5rem;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    background: rgba(8, 8, 8, 0.82);
+}
+
+.avatar-ring {
+    position: absolute;
+    inset: -5px;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    animation: pulse 2.6s ease-in-out infinite;
+}
+
+.name {
+    font-family: "Manrope", "Sora", sans-serif;
+    font-size: clamp(1.3rem, 6vw, 1.7rem);
+    font-weight: 600;
+    letter-spacing: 0.03em;
+}
+
+.role {
+    font-size: 0.78rem;
+    letter-spacing: 0.15em;
+    margin-top: 8px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.school {
+    margin-top: 4px;
+    font-size: 0.74rem;
+    color: #c8c8c8;
+    letter-spacing: 0.08em;
+}
+
+.quick-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.quick-chip {
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius-sm);
+    background: var(--bg-chip);
+    min-height: 38px;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    font-size: 0.68rem;
+    letter-spacing: 0.035em;
+    color: #dedede;
+    transition: border-color 0.25s ease, transform 0.25s ease, background-color 0.25s ease;
+}
+
+.quick-chip svg {
+    width: 14px;
+    height: 14px;
+    fill: var(--accent);
+    opacity: 0.95;
+    flex: 0 0 auto;
+}
+
+.quick-chip:active {
+    transform: translateY(1px) scale(0.995);
+}
+
+.links {
+    display: grid;
+    gap: 10px;
+}
+
+.link-item {
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius-lg);
+    background: var(--bg-panel);
+    min-height: 62px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    transition: border-color 0.25s ease, transform 0.25s ease, background 0.25s ease;
+}
+
+.link-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.07);
+    display: grid;
+    place-content: center;
+    flex: 0 0 auto;
+}
+
+.link-icon svg {
+    width: 18px;
+    height: 18px;
+    fill: #f0f0f0;
+}
+
+.link-copy {
+    flex: 1;
+    display: grid;
+    gap: 2px;
+}
+
+.link-title {
+    font-size: 0.84rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+.link-sub {
+    font-size: 0.66rem;
+    color: var(--text-muted);
+    letter-spacing: 0.03em;
+}
+
+.link-arrow {
+    font-size: 0.98rem;
+    color: var(--accent);
+    opacity: 0.86;
+}
+
+.link-item:active {
+    transform: translateY(1px) scale(0.996);
+}
+
+@media (hover: hover) {
+    .quick-chip:hover,
+    .link-item:hover {
+        border-color: var(--line-strong);
+        background: linear-gradient(130deg, rgba(255, 255, 255, 0.12), rgba(20, 20, 20, 0.92));
+    }
+}
+
+@media (min-width: 560px) {
+    body {
+        padding-top: 30px;
+    }
+
+    .page {
+        width: min(100%, 470px);
+        gap: 18px;
+    }
+
+    .profile-card {
+        padding: 24px 22px 18px;
+    }
+
+    .avatar-slot {
+        width: 116px;
+        height: 116px;
+        border-radius: 22px;
+    }
+
+    .avatar-ring {
+        border-radius: 26px;
+    }
+}
+
+@media (max-width: 360px) {
+    .avatar-slot {
+        width: 100px;
+        height: 100px;
+        border-radius: 18px;
+    }
+
+    .avatar-ring {
+        border-radius: 22px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation: none !important;
+        transition: none !important;
+    }
+
+    .page {
+        opacity: 1;
+        transform: none;
+        filter: none;
+    }
+
+    .splash {
+        display: none;
+    }
+}
+
+@keyframes pulse {
+    0%,
+    100% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.03);
+    }
+}
+
+@keyframes nameIntro {
+    from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.96);
+        letter-spacing: 0.14em;
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        letter-spacing: 0.08em;
+    }
+}
+
+@keyframes lineIntro {
+    from {
+        opacity: 0;
+        transform: scaleX(0.2);
+    }
+    to {
+        opacity: 1;
+        transform: scaleX(1);
+    }
+}
+
+@keyframes subIntro {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+</style>
     <noscript>
         <style>
             .splash { display: none !important; }
@@ -181,3 +586,4 @@
     </script>
 </body>
 </html>
+
