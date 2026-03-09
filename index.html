@@ -15,7 +15,7 @@
 </head>
 <body>
     <div class="splash" id="splash" role="presentation">
-        <p class="splash-label">ARSH HASHMI</p>
+        <p class="splash-label">Arsh Hashmi</p>
         <span class="splash-line" aria-hidden="true"></span>
         <p class="splash-sub">Mechanical Engineering</p>
     </div>
@@ -23,9 +23,9 @@
     <main class="page" aria-label="Arsh Hashmi links">
         <section class="profile-card">
             <div class="avatar-slot" aria-label="Photo placeholder">
-                <!-- Replace this placeholder with your photo later -->
+                <img class="avatar-image" id="avatarImage" src="./profile.jpg.png" alt="Arsh Hashmi profile photo">
+                <span class="avatar-fallback" id="avatarFallback">ADD PROFILE.JPG</span>
                 <span class="avatar-ring" aria-hidden="true"></span>
-                <span class="avatar-text">ADD PHOTO</span>
             </div>
 
             <h1 class="name">Arsh Hashmi</h1>
@@ -140,6 +140,8 @@
         (function () {
             const body = document.body;
             const splash = document.getElementById("splash");
+            const avatarImage = document.getElementById("avatarImage");
+            const avatarFallback = document.getElementById("avatarFallback");
             const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
             const revealPage = function () {
@@ -158,6 +160,23 @@
 
             splash.addEventListener("click", revealPage);
             splash.addEventListener("touchstart", revealPage, { passive: true });
+
+            const hideFallback = function () {
+                avatarFallback.style.display = "none";
+            };
+
+            const showFallback = function () {
+                avatarFallback.style.display = "grid";
+            };
+
+            if (avatarImage.complete && avatarImage.naturalWidth > 0) {
+                hideFallback();
+            } else {
+                showFallback();
+            }
+
+            avatarImage.addEventListener("load", hideFallback);
+            avatarImage.addEventListener("error", showFallback);
         }());
     </script>
 </body>
