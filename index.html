@@ -9,6 +9,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700&family=Sora:wght@300;400;600&display=swap");
 
 :root {
+    background-color: #000;
     --bg-base: #070707;
     --bg-panel: rgba(16, 16, 16, 0.9);
     --bg-chip: rgba(255, 255, 255, 0.04);
@@ -32,15 +33,21 @@
 html,
 body {
     min-height: 100%;
+    background-color: #000;
+}
+
+html {
+    background:
+        radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.1), transparent 33%),
+        radial-gradient(circle at 84% 100%, rgba(255, 255, 255, 0.08), transparent 42%),
+        linear-gradient(140deg, #000000, #0a0a0a 55%, #050505);
+    background-attachment: fixed;
 }
 
 body {
     font-family: "Sora", "Segoe UI", sans-serif;
     color: var(--text-main);
-    background:
-        radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.1), transparent 33%),
-        radial-gradient(circle at 84% 100%, rgba(255, 255, 255, 0.08), transparent 42%),
-        linear-gradient(140deg, #000000, #0a0a0a 55%, #050505);
+    background: transparent;
     display: flex;
     justify-content: center;
     padding: 20px 14px 30px;
@@ -56,7 +63,6 @@ body::before {
         linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
     background-size: 46px 46px;
-    mask-image: radial-gradient(circle at center, black 55%, transparent 100%);
 }
 
 a {
@@ -345,6 +351,8 @@ body.ready .splash {
     position: absolute;
     inset: 0;
     background: #000;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .resume-frame {
@@ -381,18 +389,6 @@ body.resume-open {
 .resume-close:hover {
     background: rgba(0, 0, 0, 0.58);
     border-color: rgba(255, 255, 255, 0.56);
-}
-
-@media (max-width: 560px) {
-    .resume-overlay {
-        padding: 10px;
-    }
-
-    .resume-panel {
-        width: 95vw;
-        height: 90vh;
-        border-radius: 14px;
-    }
 }
 
 @media (hover: hover) {
@@ -641,7 +637,7 @@ body.resume-open {
         <div class="resume-panel" role="dialog" aria-modal="true" aria-label="Arsh Hashmi Resume">
             <button class="resume-close" id="closeResumeBtn" type="button" aria-label="Close resume">x</button>
             <div class="resume-frame-wrap">
-                <iframe class="resume-frame" src="resume.pdf#toolbar=0&navpanes=0&scrollbar=0&view=FitH" title="Arsh Hashmi Resume PDF" loading="lazy"></iframe>
+                <iframe class="resume-frame" src="resume.pdf#toolbar=0&navpanes=0&view=FitH" title="Arsh Hashmi Resume PDF" loading="lazy"></iframe>
             </div>
         </div>
     </aside>
