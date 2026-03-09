@@ -303,7 +303,11 @@ body.ready .splash {
     position: fixed;
     inset: 0;
     z-index: 35;
-    background: #000;
+    background: rgba(0, 0, 0, 0.62);
+    backdrop-filter: blur(6px);
+    display: grid;
+    place-items: center;
+    padding: 12px;
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -317,19 +321,22 @@ body.ready .splash {
 }
 
 .resume-panel {
-    width: 100%;
-    height: 100%;
+    width: min(95vw, 980px);
+    height: min(92vh, 1120px);
     position: relative;
+    border: 1px solid var(--line-strong);
+    border-radius: 16px;
     background: #000;
+    box-shadow: 0 22px 54px rgba(0, 0, 0, 0.62);
     overflow: hidden;
-    transform: scale(1.02);
+    transform: translateY(16px) scale(0.986);
     opacity: 0;
     transition: transform 0.38s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.38s ease, filter 0.38s ease;
     filter: blur(6px);
 }
 
 .resume-overlay.open .resume-panel {
-    transform: scale(1);
+    transform: translateY(0) scale(1);
     opacity: 1;
     filter: blur(0);
 }
@@ -353,8 +360,8 @@ body.resume-open {
 
 .resume-close {
     position: absolute;
-    top: max(10px, env(safe-area-inset-top));
-    right: max(10px, env(safe-area-inset-right));
+    top: max(10px, calc(env(safe-area-inset-top) + 8px));
+    right: max(10px, calc(env(safe-area-inset-right) + 8px));
     z-index: 2;
     width: 38px;
     height: 38px;
@@ -374,6 +381,18 @@ body.resume-open {
 .resume-close:hover {
     background: rgba(0, 0, 0, 0.58);
     border-color: rgba(255, 255, 255, 0.56);
+}
+
+@media (max-width: 560px) {
+    .resume-overlay {
+        padding: 10px;
+    }
+
+    .resume-panel {
+        width: 95vw;
+        height: 90vh;
+        border-radius: 14px;
+    }
 }
 
 @media (hover: hover) {
